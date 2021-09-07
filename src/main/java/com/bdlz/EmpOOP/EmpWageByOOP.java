@@ -3,52 +3,56 @@ package com.bdlz.EmpOOP;
 public class EmpWageByOOP {
     public static final int IS_FULL_TIME = 1;
     public static final int IS_PART_TIME = 2;
+    private int numOfCompany = 0;
+    private CompanyInfo[] companyInfoArray;
 
-    private final String company;
-    private final int empRatePerHr;
-    private final int numWorkingDays;
-    private final int maxHoursPerMonth;
-    private int totalEmpWage;
-
-    public EmpWageByOOP(String company, int empRatePerHr, int numWorkingDays, int maxHoursPerMonth) {
-        this.company = company;
-        this.empRatePerHr = empRatePerHr;
-        this.numWorkingDays = numWorkingDays;
-        this.maxHoursPerMonth = maxHoursPerMonth;
+    public EmpWageByOOP() {
+        companyInfoArray = new CompanyInfo[3];
     }
 
-    public int multiCompany() {
-        int empHrs = 0, totalEmpHrs = 8, totalWorkingDays = 0;
-        while (totalEmpHrs < maxHoursPerMonth && totalWorkingDays < numWorkingDays) {
+    private void addCompanyInfo(String companyName, int empRatePerHr, int numOfWorkingDays, int maxHrsPerMonth) {
+        companyInfoArray[numOfCompany] = new CompanyInfo(companyName, empRatePerHr, numOfWorkingDays, maxHrsPerMonth);
+        numOfCompany++;
+    }
+
+    private void computeEmpWage() {
+        for (int i = 0; i < numOfCompany; i++) {
+            companyInfoArray[i].setTotalWage(this.computeEmpWage(companyInfoArray[i]));
+            System.out.println(companyInfoArray[i]);
+        }
+    }
+
+    public static int computeEmpWage(CompanyInfo companyInfo) {
+        int empHrs = 0;
+        int totalWage = 0;
+        int totalEmpHrs = 0;
+        int totalWorkingDays = 0;
+
+        while (totalWorkingDays <= companyInfo.getNumOfWorkingDays() && totalEmpHrs < companyInfo.getMaxHrsPerMonth()) {
             totalWorkingDays++;
-            int empCheck = (int) Math.floor(Math.random() * 10) % 3;
-            switch (empCheck) {
-                case IS_PART_TIME:
-                    empHrs = 4;
-                    break;
+            double empCheck = Math.floor(Math.random() * 10) % 3;
+            switch ((int) empCheck) {
                 case IS_FULL_TIME:
                     empHrs = 8;
+                    break;
+                case IS_PART_TIME:
+                    empHrs = 4;
                     break;
                 default:
                     empHrs = 0;
             }
+            int empWage = empHrs * companyInfo.getEmpRatePerHr();
             totalEmpHrs += empHrs;
-            System.out.println("Day:" + totalWorkingDays + " Emp Hr:" + empHrs);
+            totalWage += empWage;
         }
-        totalEmpWage = totalEmpHrs * empRatePerHr;
-        return empHrs;
-    }
-
-    public String toString() {
-        return ("Total emp Wage for company :" + company + " is: " + totalEmpWage);
+        return totalWage;
     }
     public static void main(String[] args) {
-        System.out.println(" Welcome to EmployeeWage builder ");
-        EmpWageByOOP dMart = new EmpWageByOOP("Dmart", 20, 20, 100);
-        EmpWageByOOP reliance = new EmpWageByOOP("Reliance", 10, 20, 110);
-        dMart.multiCompany();
-        System.out.println(dMart);
-        reliance.multiCompany();
-        System.out.println(reliance);
+        EmpWageByOOP employeeWage = new EmpWageByOOP();
+        employeeWage.addCompanyInfo("Dmart", 20, 20, 100);
+        employeeWage.addCompanyInfo("JIO", 25, 22, 110);
+        employeeWage.addCompanyInfo("Airtel", 27, 26, 120);
+        employeeWage.computeEmpWage();
+
     }
 }
